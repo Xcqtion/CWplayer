@@ -60,8 +60,7 @@ function init(puz) {
 			for(var z = 0; z < data[4][y].length; z++) {
 				ANSgrid[y][z] = new Cell(data[4][y].charAt(z), null, "rgb(0, 0, 0)", (data[4][y].charAt(z) == "#" ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)"));
 				USRgrid[y][z] = new Cell((ANSgrid[y][z].letter == "#" ? "#" : " "), null, "rgb(0, 0, 0)", ANSgrid[y][z].cColor);
-
-				if(((y == 0 || z == 0) || (USRgrid[y - 1][z].letter == "#" || USRgrid[y][z - 1].letter == "#")) && USRgrid[y][z].letter != "#") {
+				if(((y === 0 || z === 0) || (USRgrid[y - 1][z].letter == "#" || USRgrid[y][z - 1].letter == "#")) && USRgrid[y][z].letter != "#") {
 					USRgrid[y][z].number = currNum;
 					currNum++;
 				}
@@ -70,6 +69,23 @@ function init(puz) {
 		calcRange(focusX, focusY);
 		//TODO: refine this, used just for cleanliness
 		USRgrid[0][0].cColor = "rgb(150, 150, 150)";
+
+		document.getElementById("AcrossQuestions").innerHTML += "<h1>Across Clues</h1>"
+		for (var i = 0; ACRclues.length - 1 > i; i++) {
+			var clue = ACRclues[i];
+			clue = clue.split(". ");
+			var number = clue[0];
+			clue = clue[1];
+			document.getElementById("AcrossQuestions").innerHTML += '<li id="' + 'A' + number + '"><span>'+ number + "<span>" + clue + "</li>";
+		};
+		document.getElementById("DownQuestions").innerHTML += "<h1>Down Clues</h1>"
+		for (var i = 0; DOWclues.length - 1 > i; i++) {
+			var clue = DOWclues[i];
+			clue = clue.split(". ");
+			var number = clue[0];
+			clue = clue[1];
+			document.getElementById("DownQuestions").innerHTML += '<li id="' + 'D' + number + '"><span>'+ number + "<span>" + clue + "</li>";
+		};
 	} 
 }
 
@@ -136,6 +152,7 @@ function parse(block) {
 			temp.push(block[x]);
 		}
 	}
+	sets.push(temp);
 	return sets;
 }
 
@@ -201,10 +218,20 @@ function replicateCell(x, y) {
 	ctxStage.fillStyle = "rgb(0, 0, 0)";
 	ctxStage.strokeRect((x*30) + 30, (y*30) + 90, 30, 30);
 
+<<<<<<< HEAD
+	//console.log(USRgrid[1][0].cColor);
+
+=======
+>>>>>>> 270ab1c3cd1d8507d566b3bd031c1b354494142a
 	ctxStage.fillStyle = USRgrid[y][x].lColor;
 	ctxStage.font = "20px Arial";
 	ctxStage.fillText(USRgrid[y][x].letter, (x*30) + 38, (y*30) + 115);
 
+<<<<<<< HEAD
+	//console.log(USRgrid[y][x].letter);
+
+=======
+>>>>>>> 270ab1c3cd1d8507d566b3bd031c1b354494142a
 	ctxStage.font = "10px Arial";
 	ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + 32, (y*30) + 100);
 }

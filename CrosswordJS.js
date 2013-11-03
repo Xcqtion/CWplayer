@@ -24,11 +24,13 @@ var DOWclues	= [];
 
 var USRgrid	 	= [];
 var ANSgrid		= [];
+var COMgrid		= [];
 
 var loaded = false;
 var focusX = 0;
 var focusY = 0;
 var horiz = true;
+var activeNum = 1;
 
 var prevCells = [];
 var currCells = [];
@@ -185,6 +187,8 @@ function redraw(code, secondary) {
 	}
 
 	replicateCell(focusX, focusY);
+
+	console.log(activeNum);
 }
 
 //Updates a cell based on USRgrid[y][x] element properties
@@ -197,13 +201,9 @@ function replicateCell(x, y) {
 	ctxStage.fillStyle = "rgb(0, 0, 0)";
 	ctxStage.strokeRect((x*30) + 30, (y*30) + 90, 30, 30);
 
-	console.log(USRgrid[1][0].cColor);
-
 	ctxStage.fillStyle = USRgrid[y][x].lColor;
 	ctxStage.font = "20px Arial";
 	ctxStage.fillText(USRgrid[y][x].letter, (x*30) + 38, (y*30) + 115);
-
-	console.log(USRgrid[y][x].letter);
 
 	ctxStage.font = "10px Arial";
 	ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + 32, (y*30) + 100);
@@ -218,6 +218,9 @@ function calcRange(x, y) {
 		while(tempX > 0 && USRgrid[y][tempX - 1].letter != "#") {
 			tempX--;
 		} 
+
+		activeNum = USRgrid[y][tempX].number;
+
 		while(tempX <= 14 && USRgrid[y][tempX].letter != "#") {
 			currCells.push([tempX, y]);
 			tempX++;
@@ -227,8 +230,10 @@ function calcRange(x, y) {
 		while(tempY > 0 && USRgrid[tempY - 1][x].letter != "#") {
 			tempY--;
 		} 
+
+		activeNum = USRgrid[tempY][x].number;
+
 		while(tempY <= 14 && USRgrid[tempY][x].letter != "#") {
-			console.log(tempY);
 			currCells.push([x, tempY]);
 			tempY++;
 		}

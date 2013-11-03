@@ -234,7 +234,6 @@ function calcRange(x, y) {
 
 	redraw(0);
 }
- 
 //Key events
 window.onkeydown = function(e) {
 	var key = e.keyCode;

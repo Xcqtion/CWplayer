@@ -62,8 +62,7 @@ function init(puz) {
 			for(var z = 0; z < data[4][y].length; z++) {
 				ANSgrid[y][z] = new Cell(data[4][y].charAt(z), null, "rgb(0, 0, 0)", (data[4][y].charAt(z) == "#" ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)"));
 				USRgrid[y][z] = new Cell((ANSgrid[y][z].letter == "#" ? "#" : " "), null, "rgb(0, 0, 0)", ANSgrid[y][z].cColor);
-
-				if(((y == 0 || z == 0) || (USRgrid[y - 1][z].letter == "#" || USRgrid[y][z - 1].letter == "#")) && USRgrid[y][z].letter != "#") {
+				if(((y === 0 || z === 0) || (USRgrid[y - 1][z].letter == "#" || USRgrid[y][z - 1].letter == "#")) && USRgrid[y][z].letter != "#") {
 					USRgrid[y][z].number = currNum;
 					currNum++;
 				}
@@ -72,7 +71,23 @@ function init(puz) {
 		calcRange(focusX, focusY);
 		//TODO: refine this, used just for cleanliness
 		USRgrid[0][0].cColor = "rgb(150, 150, 150)";
-		console.log(DOWclues);
+
+		document.getElementById("AcrossQuestions").innerHTML += "<h1>Across Clues</h1>"
+		for (var i = 0; ACRclues.length - 1 > i; i++) {
+			var clue = ACRclues[i];
+			clue = clue.split(". ");
+			var number = clue[0];
+			clue = clue[1];
+			document.getElementById("AcrossQuestions").innerHTML += '<li id="' + 'A' + number + '"><span>'+ number + "<span>" + clue + "</li>";
+		};
+		document.getElementById("DownQuestions").innerHTML += "<h1>Down Clues</h1>"
+		for (var i = 0; DOWclues.length - 1 > i; i++) {
+			var clue = DOWclues[i];
+			clue = clue.split(". ");
+			var number = clue[0];
+			clue = clue[1];
+			document.getElementById("DownQuestions").innerHTML += '<li id="' + 'D' + number + '"><span>'+ number + "<span>" + clue + "</li>";
+		};
 	} 
 }
 
@@ -185,9 +200,6 @@ function redraw(code, secondary) {
 		checkColors();
 	}
 
-	console.log("Prev: (" + prevX + ", " + prevY + ")");
-	console.log("Focus: (" + focusX + ", " + focusY + ")");
-
 	for(var a = 0; a < prevCells.length; a++) {
 		replicateCell(prevCells[a][0], prevCells[a][1])
 	}
@@ -200,7 +212,14 @@ function redraw(code, secondary) {
 
 	replicateCell(focusX, focusY);
 
-	console.log(activeNum);
+	var actives = document.getElementsByClassName("active")
+	if(actives.length > 0)
+		for (var i = actives.length - 1; i >= 0; i--) {
+			actives[i].className = ""
+		};
+	var activeQuestion = document.getElementById((horiz?"A":"D") + activeNum)
+	if(activeQuestion != null)
+		activeQuestion.className = "active"
 }
 
 //Updates a cell based on USRgrid[y][x] element properties

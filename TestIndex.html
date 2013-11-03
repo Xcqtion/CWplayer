@@ -7,13 +7,17 @@
 	<script type="text/javascript" src="CrosswordJS.js"></script>
 	<style>
 	body{margin:0;}
-	.quiz {}
+	canvas, .quiz {float:left;}
 	.quiz li {}
+	.quiz li.active { background:#f2f2f2; }
 	</style>
 </head>
 <body onload="draw();">
 	<canvas id="stage" height="700px" width="700px"></canvas>
-	<ul class="quiz">
+	<ul id="AcrossQuestions" class="quiz">
+		
+	</ul>
+	<ul id="DownQuestions" class="quiz">
 		
 	</ul>
 </body>

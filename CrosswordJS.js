@@ -240,20 +240,20 @@ function replicateCell(x, y) {
 	ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + 32, (y*30) + 100);
 }
 
-//Calculates a range of values - array represents a word in the puzzle
-function calcRange(x, y) {
-	prevCells = currCells;
-	currCells = [];
-	if(horiz) {
+function getCells(x,y,across) {
+	result = {}
+	result.currCells = []
+
+	if(across) {
 		var tempX = x;
 		while(tempX > 0 && USRgrid[y][tempX - 1].letter != "#") {
 			tempX--;
 		} 
 
-		activeNum = USRgrid[y][tempX].number;
+		result.activeNum = USRgrid[y][tempX].number;
 
 		while(tempX <= 14 && USRgrid[y][tempX].letter != "#") {
-			currCells.push([tempX, y]);
+			result.currCells.push([tempX, y]);
 			tempX++;
 		}
 	} else {
@@ -262,13 +262,22 @@ function calcRange(x, y) {
 			tempY--;
 		} 
 
-		activeNum = USRgrid[tempY][x].number;
+		result.activeNum = USRgrid[tempY][x].number;
 
 		while(tempY <= 14 && USRgrid[tempY][x].letter != "#") {
-			currCells.push([x, tempY]);
+			result.currCells.push([x, tempY]);
 			tempY++;
 		}
 	}
+	return result
+}
+
+//Calculates a range of values - array represents a word in the puzzle
+function calcRange(x, y) {
+	prevCells = currCells;
+	var resultingThese = getCells(x,y,horiz);
+	currCells = resultingThese.currCells;
+	activeNum = resultingThese.activeNum;
 
 	for(var a = 0; a < prevCells.length; a++) {
 		USRgrid[prevCells[a][1]][prevCells[a][0]].cColor = "rgb(255, 255, 255)";
@@ -278,6 +287,10 @@ function calcRange(x, y) {
 	}
 
 	redraw(0);
+}
+
+function checkCorrectness() {
+
 }
 
 function checkColors() {
@@ -326,9 +339,6 @@ window.onkeydown = function(e) {
 	} else if(key >= 65 && key <= 90) {	//Any letter key
 		USRgrid[focusY][focusX]["letter"] = String.fromCharCode(key);
 		redraw(1);
-	} else if(key == 16) {
-		inCheck = true;
-		redraw(0);
 	} else {
 		// Did not capture any keys
 		cancelDefault = false
@@ -339,9 +349,5 @@ window.onkeydown = function(e) {
 }
 
 window.onkeyup = function(e) { 
-	var key = e.keyCode;
-	if(key == 16) {
-		inCheck = false;
-		redraw(0);
-	} 
+	checkCorrectness();
 }

@@ -162,11 +162,13 @@ function redraw(code, secondary) {
 			calcRange(focusX, focusY);
 		}
 	}
+
 	if((horiz && prevY === focusY) || (!horiz && prevX === focusX)){
 		USRgrid[prevY][prevX].cColor   = "rgb(200, 200, 200)";
 	} else {
 		USRgrid[prevY][prevX].cColor   = "rgb(255, 255, 255)";
 	}
+
 	USRgrid[focusY][focusX].cColor = "rgb(150, 150, 150)";
 
 	console.log("Prev: (" + prevX + ", " + prevY + ")");
@@ -216,7 +218,7 @@ function calcRange(x, y) {
 		while(tempX > 0 && USRgrid[y][tempX - 1].letter != "#") {
 			tempX--;
 		} 
-		while(tempX < 14 && USRgrid[y][tempX].letter != "#") {
+		while(tempX <= 14 && USRgrid[y][tempX].letter != "#") {
 			currCells.push([tempX, y]);
 			tempX++;
 		}
@@ -225,7 +227,7 @@ function calcRange(x, y) {
 		while(tempY > 0 && USRgrid[tempY - 1][x].letter != "#") {
 			tempY--;
 		} 
-		while(tempY < 14 && USRgrid[tempY][x].letter != "#") {
+		while(tempY <= 14 && USRgrid[tempY][x].letter != "#") {
 			console.log(tempY);
 			currCells.push([x, tempY]);
 			tempY++;

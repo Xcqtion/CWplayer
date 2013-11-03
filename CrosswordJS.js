@@ -137,6 +137,10 @@ function parse(block) {
 	return sets;
 }
 
+function checkCell() {
+	return (USRgrid[focusY][focusX] === ANSgrid[focusY][focusX]);
+}
+
 //redraws canvas based on code and possible secondary #s
 function redraw(code, secondary) {
 	prevX = focusX;
@@ -158,7 +162,7 @@ function redraw(code, secondary) {
 			calcRange(focusX, focusY);
 		}
 	}
-
+	
 	USRgrid[prevY][prevX].cColor   = "rgb(255, 255, 255)";
 	USRgrid[focusY][focusX].cColor = "rgb(150, 150, 150)";
 

@@ -139,8 +139,8 @@ function parse(block) {
 	return sets;
 }
 
-function checkCell() {
-	return (USRgrid[focusY][focusX] === ANSgrid[focusY][focusX]);
+function checkCell(y,x) {
+	return (USRgrid[y][x] === ANSgrid[y][x]);
 }
 
 //redraws canvas based on code and possible secondary #s

@@ -218,20 +218,10 @@ function replicateCell(x, y) {
 	ctxStage.fillStyle = "rgb(0, 0, 0)";
 	ctxStage.strokeRect((x*30) + 30, (y*30) + 90, 30, 30);
 
-<<<<<<< HEAD
-	//console.log(USRgrid[1][0].cColor);
-
-=======
->>>>>>> 270ab1c3cd1d8507d566b3bd031c1b354494142a
 	ctxStage.fillStyle = USRgrid[y][x].lColor;
 	ctxStage.font = "20px Arial";
 	ctxStage.fillText(USRgrid[y][x].letter, (x*30) + 38, (y*30) + 115);
 
-<<<<<<< HEAD
-	//console.log(USRgrid[y][x].letter);
-
-=======
->>>>>>> 270ab1c3cd1d8507d566b3bd031c1b354494142a
 	ctxStage.font = "10px Arial";
 	ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + 32, (y*30) + 100);
 }

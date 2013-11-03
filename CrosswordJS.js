@@ -190,8 +190,8 @@ function redraw(code, secondary) {
 
 	USRgrid[focusY][focusX].cColor = "rgb(150, 150, 150)";
 
-	console.log("Prev: (" + prevX + ", " + prevY + ")");
-	console.log("Focus: (" + focusX + ", " + focusY + ")");
+	//console.log("Prev: (" + prevX + ", " + prevY + ")");
+	//console.log("Focus: (" + focusX + ", " + focusY + ")");
 
 	for(var a = 0; a < prevCells.length; a++) {
 		replicateCell(prevCells[a][0], prevCells[a][1])
@@ -205,7 +205,14 @@ function redraw(code, secondary) {
 
 	replicateCell(focusX, focusY);
 
-	console.log(activeNum);
+	var actives = document.getElementsByClassName("active")
+	if(actives.length > 0)
+		for (var i = actives.length - 1; i >= 0; i--) {
+			actives[i].className = ""
+		};
+	var activeQuestion = document.getElementById((horiz?"A":"D") + activeNum)
+	if(activeQuestion != null)
+		activeQuestion.className = "active"
 }
 
 //Updates a cell based on USRgrid[y][x] element properties

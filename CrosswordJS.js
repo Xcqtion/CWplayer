@@ -162,8 +162,11 @@ function redraw(code, secondary) {
 			calcRange(focusX, focusY);
 		}
 	}
-	
-	USRgrid[prevY][prevX].cColor   = "rgb(255, 255, 255)";
+	if((horiz && prevY === focusY) || (!horiz && prevX === focusX)){
+			USRgrid[prevY][prevX].cColor   = "rgb(200, 200, 200)";
+	} else {
+		USRgrid[prevY][prevX].cColor   = "rgb(255, 255, 255)";
+	}
 	USRgrid[focusY][focusX].cColor = "rgb(150, 150, 150)";
 
 	console.log("Prev: (" + prevX + ", " + prevY + ")");
@@ -238,7 +241,6 @@ function calcRange(x, y) {
 
 	redraw(0);
 }
- 
 //Key events
 window.onkeydown = function(e) {
 	var key = e.keyCode;

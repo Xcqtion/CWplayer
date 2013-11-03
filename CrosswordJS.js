@@ -302,7 +302,7 @@ function restoreColors() {
 //Key events
 window.onkeydown = function(e) {
 	var key = e.keyCode;
-
+	var cancelDefault = true
 	console.log(key);
 	if(key == 38) {	//Up
 		if(focusY != 0 && USRgrid[focusY - 1][focusX].letter != "#") {
@@ -329,6 +329,12 @@ window.onkeydown = function(e) {
 	} else if(key == 16) {
 		inCheck = true;
 		redraw(0);
+	} else {
+		// Did not capture any keys
+		cancelDefault = false
+	}
+	if (cancelDefault) {
+		e.preventDefault()
 	}
 }
 
@@ -337,5 +343,5 @@ window.onkeyup = function(e) {
 	if(key == 16) {
 		inCheck = false;
 		redraw(0);
-	}
+	} 
 }

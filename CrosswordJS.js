@@ -275,7 +275,7 @@ function calcRange(x, y) {
 //Key events
 window.onkeydown = function(e) {
 	var key = e.keyCode;
-
+	var cancelDefault = true
 	console.log(key);
 	if(key == 38) {	//Up
 		if(focusY != 0 && USRgrid[focusY - 1][focusX].letter != "#") {
@@ -300,5 +300,11 @@ window.onkeydown = function(e) {
 	} else if(key >= 65 && key <= 90) {	//Any letter key
 		USRgrid[focusY][focusX]["letter"] = String.fromCharCode(key);
 		redraw(1);
+	} else {
+		// Did not capture any keys
+		cancelDefault = false
+	}
+	if (cancelDefault) {
+		e.preventDefault()
 	}
 }

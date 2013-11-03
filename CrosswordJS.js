@@ -137,8 +137,8 @@ function parse(block) {
 	return sets;
 }
 
-function checkCell() {
-	return (USRgrid[focusY][focusX] === ANSgrid[focusY][focusX]);
+function checkCell(y,x) {
+	return (USRgrid[y][x] === ANSgrid[y][x]);
 }
 
 //redraws canvas based on code and possible secondary #s
@@ -163,7 +163,7 @@ function redraw(code, secondary) {
 		}
 	}
 	if((horiz && prevY === focusY) || (!horiz && prevX === focusX)){
-			USRgrid[prevY][prevX].cColor   = "rgb(200, 200, 200)";
+		USRgrid[prevY][prevX].cColor   = "rgb(200, 200, 200)";
 	} else {
 		USRgrid[prevY][prevX].cColor   = "rgb(255, 255, 255)";
 	}

@@ -184,6 +184,12 @@ function redraw(code, secondary) {
 		if(!horiz) {
 			calcRange(focusX, focusY);
 		}
+	} else if (code === 4) {	//Deletion of letter
+		if(horiz && focusX != 0 && USRgrid[focusY][focusX - 1].letter != "#") {
+			focusX--;
+		} else if(!horiz && focusY != 0 && USRgrid[focusY - 1][focusX].letter != "#") {		
+			focusY--;
+		}
 	}
 
 	if(!inCheck) {
@@ -300,7 +306,7 @@ function checkColors() {
 			if(checkCell(x, y)) {
 				USRgrid[y][x].cColor = "rgb(0, 200, 100)";
 				USRgrid[y][x].lColor = "rgb(0, 100, 50)";
-			} else if(!USRgrid[y][x] == "#") {
+			} else {
 				USRgrid[y][x].cColor = "rgb(200, 0, 100)";
 				USRgrid[y][x].lColor = "rgb(200, 0, 50)";
 			}
@@ -339,6 +345,9 @@ window.onkeydown = function(e) {
 	} else if(key >= 65 && key <= 90) {	//Any letter key
 		USRgrid[focusY][focusX]["letter"] = String.fromCharCode(key);
 		redraw(1);
+	} else if(key == 8) {
+		USRgrid[focusY][focusX].letter = " ";
+		redraw(4);
 	} else {
 		// Did not capture any keys
 		cancelDefault = false

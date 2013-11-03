@@ -37,6 +37,8 @@ var currCells = [];
 var prevX = focusX;
 var prevY = focusY;
 
+var inCheck = false;
+
 //initializes crossword puzzle, called only once
 function init(puz) {
 	var data;
@@ -70,6 +72,7 @@ function init(puz) {
 		calcRange(focusX, focusY);
 		//TODO: refine this, used just for cleanliness
 		USRgrid[0][0].cColor = "rgb(150, 150, 150)";
+		console.log(DOWclues);
 	} 
 }
 
@@ -136,11 +139,14 @@ function parse(block) {
 			temp.push(block[x]);
 		}
 	}
+	sets.push(temp);
 	return sets;
 }
 
-function checkCell(y,x) {
-	return (USRgrid[y][x] === ANSgrid[y][x]);
+function checkCell(x, y) {
+	return ((USRgrid[y][x].letter != " ")
+		 && (USRgrid[y][x].letter != "#") 
+		 && (USRgrid[y][x].letter.ignoreCase === ANSgrid[y][x].letter.ignoreCase));
 }
 
 //redraws canvas based on code and possible secondary #s
@@ -165,13 +171,19 @@ function redraw(code, secondary) {
 		}
 	}
 
-	if((horiz && prevY === focusY) || (!horiz && prevX === focusX)){
-		USRgrid[prevY][prevX].cColor   = "rgb(200, 200, 200)";
-	} else {
-		USRgrid[prevY][prevX].cColor   = "rgb(255, 255, 255)";
-	}
+	if(!inCheck) {
+		console.log("Boo!");
+		if((horiz && prevY === focusY) || (!horiz && prevX === focusX)){
+			USRgrid[prevY][prevX].cColor   = "rgb(200, 200, 200)";
+		} else {
+			USRgrid[prevY][prevX].cColor   = "rgb(255, 255, 255)";
+		}
 
-	USRgrid[focusY][focusX].cColor = "rgb(150, 150, 150)";
+		USRgrid[focusY][focusX].cColor = "rgb(150, 150, 150)";
+	} else {
+		console.log("Yay!");
+		checkColors();
+	}
 
 	console.log("Prev: (" + prevX + ", " + prevY + ")");
 	console.log("Focus: (" + focusX + ", " + focusY + ")");
@@ -248,6 +260,26 @@ function calcRange(x, y) {
 
 	redraw(0);
 }
+
+function checkColors() {
+	console.log(USRgrid.length);
+	for(var x = 0; x < USRgrid.length; x++) {
+		for(var y = 0; y < USRgrid[x].length; y++) {
+			if(checkCell(x, y)) {
+				USRgrid[y][x].cColor = "rgb(0, 200, 100)";
+				USRgrid[y][x].lColor = "rgb(0, 100, 50)";
+			} else if(!USRgrid[y][x] == "#") {
+				USRgrid[y][x].cColor = "rgb(200, 0, 100)";
+				USRgrid[y][x].lColor = "rgb(200, 0, 50)";
+			}
+		}
+	}
+}
+
+function restoreColors() {
+
+}
+
 //Key events
 window.onkeydown = function(e) {
 	var key = e.keyCode;
@@ -272,9 +304,19 @@ window.onkeydown = function(e) {
 	} else if(key == 32) {	//Space
 		horiz = !horiz;
 		calcRange(focusX, focusY);
-
 	} else if(key >= 65 && key <= 90) {	//Any letter key
 		USRgrid[focusY][focusX]["letter"] = String.fromCharCode(key);
 		redraw(1);
+	} else if(key == 16) {
+		inCheck = true;
+		redraw(0);
+	}
+}
+
+window.onkeyup = function(e) { 
+	var key = e.keyCode;
+	if(key == 16) {
+		inCheck = false;
+		redraw(0);
 	}
 }

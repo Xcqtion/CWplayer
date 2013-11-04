@@ -26,6 +26,9 @@ var USRgrid	 	= [];
 var ANSgrid		= [];
 var COMgrid		= [];
 
+var CorrectAcrossQuestions	= {};
+var CorrectDownQuestions	= {};
+
 var loaded = false;
 var focusX = 0;
 var focusY = 0;
@@ -161,7 +164,7 @@ function parse(block) {
 function checkCell(x, y) {
 	return ((USRgrid[y][x].letter != " ")
 		 && (USRgrid[y][x].letter != "#") 
-		 && (USRgrid[y][x].letter.ignoreCase === ANSgrid[y][x].letter.ignoreCase));
+		 && (USRgrid[y][x].letter.toUpperCase() === ANSgrid[y][x].letter.toUpperCase()));
 }
 
 //redraws canvas based on code and possible secondary #s
@@ -203,7 +206,7 @@ function redraw(code, secondary) {
 		USRgrid[focusY][focusX].cColor = "rgb(150, 150, 150)";
 	} else {
 		console.log("Yay!");
-		checkColors();
+		//checkColors();
 	}
 
 	for(var a = 0; a < prevCells.length; a++) {
@@ -232,13 +235,17 @@ function redraw(code, secondary) {
 function replicateCell(x, y) {
 	ctxStage.clearRect((x*30) + 30, (y*30) + 90, 30, 30);
 
+	// Check if cell is in a correct row/column
+	var isCorrect = false
+	if( CorrectAcrossQuestions[getCells(x,y,true).activeNum]  || CorrectDownQuestions[getCells(x,y,false).activeNum] )
+		isCorrect = true
 	ctxStage.fillStyle = USRgrid[y][x].cColor;
 	ctxStage.fillRect((x*30) + 30, (y*30) + 90, 30, 30);
 
 	ctxStage.fillStyle = "rgb(0, 0, 0)";
 	ctxStage.strokeRect((x*30) + 30, (y*30) + 90, 30, 30);
 
-	ctxStage.fillStyle = USRgrid[y][x].lColor;
+	ctxStage.fillStyle = isCorrect?"green":USRgrid[y][x].lColor;
 	ctxStage.font = "20px Arial";
 	ctxStage.fillText(USRgrid[y][x].letter, (x*30) + 38, (y*30) + 115);
 
@@ -286,17 +293,37 @@ function calcRange(x, y) {
 	activeNum = resultingThese.activeNum;
 
 	for(var a = 0; a < prevCells.length; a++) {
-		USRgrid[prevCells[a][1]][prevCells[a][0]].cColor = "rgb(255, 255, 255)";
+		USRgrid[ prevCells[a][1] ][ prevCells[a][0] ].cColor = "rgb(255, 255, 255)";
 	}
 	for(var b = 0; b < currCells.length; b++) {
-		USRgrid[currCells[b][1]][currCells[b][0]].cColor = "rgb(200, 200, 200)";
+		USRgrid[ currCells[b][1] ][ currCells[b][0] ].cColor = "rgb(200, 200, 200)";
 	}
 
 	redraw(0);
 }
 
 function checkCorrectness() {
+	var across = getCells(focusX,focusY,true)
+	var down = getCells(focusX,focusY,false)
+	var check = [across,down]
+	
+	console.log(check)
 
+	for(var checki = 0; checki < check.length; checki++){
+		var cellsToCheck = check[checki]
+		var allCorrect = true
+		for(var celli = 0; celli < cellsToCheck.currCells.length; celli++){
+			cellToCheck = cellsToCheck.currCells[celli]
+			if(!checkCell(cellToCheck[0],cellToCheck[1])){
+				allCorrect = false;
+				break;
+			}
+		}
+		if(checki === 0)
+			CorrectAcrossQuestions[cellsToCheck.activeNum] = allCorrect
+		if(checki === 1)
+			CorrectDownQuestions[cellsToCheck.activeNum] = allCorrect
+	}
 }
 
 function checkColors() {
@@ -312,10 +339,6 @@ function checkColors() {
 			}
 		}
 	}
-}
-
-function restoreColors() {
-
 }
 
 //Key events

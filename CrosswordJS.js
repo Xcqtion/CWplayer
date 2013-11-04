@@ -40,6 +40,8 @@ var currCells = [];
 var prevX = focusX;
 var prevY = focusY;
 
+var moving = false;
+
 var inCheck = false;
 
 //initializes crossword puzzle, called only once
@@ -196,7 +198,6 @@ function redraw(code, secondary) {
 	}
 
 	if(!inCheck) {
-		console.log("Boo!");
 		if((horiz && prevY === focusY) || (!horiz && prevX === focusX)){
 			USRgrid[prevY][prevX].cColor   = "rgb(200, 200, 200)";
 		} else {
@@ -204,9 +205,6 @@ function redraw(code, secondary) {
 		}
 
 		USRgrid[focusY][focusX].cColor = "rgb(150, 150, 150)";
-	} else {
-		console.log("Yay!");
-		//checkColors();
 	}
 
 	for(var a = 0; a < prevCells.length; a++) {
@@ -224,11 +222,30 @@ function redraw(code, secondary) {
 	var actives = document.getElementsByClassName("active")
 	if(actives.length > 0)
 		for (var i = actives.length - 1; i >= 0; i--) {
-			actives[i].className = ""
+			actives[i].className =
+				actives[i].className.replace(/\bactive\b/,'');
 		};
+	var acrossActive = getCells(focusX, focusY,true).activeNum
+	var acrossActiveElem = document.getElementById("A"+acrossActive)
+	if(acrossActiveElem != null) {
+		acrossActiveElem.className = 
+			acrossActiveElem.className.replace(/\bcorrect\b/,'');
+		if(CorrectAcrossQuestions[acrossActive]){
+			acrossActiveElem.className += " correct"
+		}
+	}
+	var downActive = getCells(focusX, focusY,false).activeNum
+	var downActiveElem = document.getElementById("D"+downActive)
+	if(downActiveElem != null) {
+		downActiveElem.className = 
+			downActiveElem.className.replace(/\bcorrect\b/,'');
+		if(CorrectDownQuestions[downActive]){
+			downActiveElem.className += " correct"
+		}
+	}
 	var activeQuestion = document.getElementById((horiz?"A":"D") + activeNum)
 	if(activeQuestion != null)
-		activeQuestion.className = "active"
+		activeQuestion.className += ' active' 
 }
 
 //Updates a cell based on USRgrid[y][x] element properties
@@ -324,6 +341,7 @@ function checkCorrectness() {
 		if(checki === 1)
 			CorrectDownQuestions[cellsToCheck.activeNum] = allCorrect
 	}
+	redraw()
 }
 
 function checkColors() {

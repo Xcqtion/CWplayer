@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+	<title>Crossword Test</title>
+	<meta charset="UTF-8">
+	
+	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="CrosswordJS.js"></script>
+	<style>
+	body{margin:0;}
+	canvas, .quiz {float:left;}
+	.quiz li {}
+	.quiz li.active { background:lightgrey; }
+	.quiz li span {padding-left:1em;}
+	.quiz li.correct {color:gray;}
+	.quiz ul {list-style-type: none;}
+	</style>
+</head>
+<body onload="draw();">
+	<canvas id="stage" height="700px" width="700px"></canvas>
+	<ul id="AcrossQuestions" class="quiz">
+		
+	</ul>
+	<ul id="DownQuestions" class="quiz">
+		
+	</ul>
+</body>

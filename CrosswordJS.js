@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 var req = new XMLHttpRequest();
 req.overrideMimeType("text/plain");
 
@@ -25,7 +24,6 @@ var DOWclues	= [];
 
 var USRgrid	 	= [];
 var ANSgrid		= [];
-var COMgrid		= [];
 
 var CorrectAcrossQuestions	= {};
 var CorrectDownQuestions	= {};
@@ -40,6 +38,8 @@ var prevCells = [];
 var currCells = [];
 var prevX = focusX;
 var prevY = focusY;
+
+var time = [0, -1];
 
 var black = "rgb(0, 0, 0)";			//Black
 var gray = 	"rgb(150, 150, 150)";	//Gray
@@ -96,6 +96,9 @@ function init(puz) {
 			clue = clue[1];
 			document.getElementById("DownQuestions").innerHTML += '<li id="' + 'D' + number + '"><span>'+ number + "<span>" + clue + "</li>";
 		};
+		
+		redrawTimer();
+		setInterval(redrawTimer, 1000);
 	} 
 }
 
@@ -286,6 +289,7 @@ function replicateCell(x, y) {
 	ctxStage.font = "20px Arial";
 	ctxStage.fillText(USRgrid[y][x].letter, (x*30) + 38, (y*30) + 115);
 
+	ctxStage.fillStyle = black;
 	ctxStage.font = "10px Arial";
 	ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + 32, (y*30) + 100);
 }
@@ -401,6 +405,18 @@ function checkColors() {
 	}
 }
 
+function redrawTimer() {
+	time[1]++;
+	if(time[1] == 60) {
+		time[0]++;
+		time[1] = 0;
+	}
+	ctxStage.clearRect(390, 25, 90, 35);
+	ctxStage.font = "35px Arial";
+	ctxStage.fillStyle = "rgb(" + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + ")";
+	ctxStage.fillText(time[0] + ":" + (time[1] > 9 ? time[1] : "0" + time[1]), 390, 60);
+}
+
 //Key events
 window.onkeydown = function(e) {
 	var key = e.keyCode;
@@ -442,3 +458,4 @@ window.onkeydown = function(e) {
 
 window.onkeyup = function(e) { 
 	checkCorrectness();
+}

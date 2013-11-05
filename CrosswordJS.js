@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 var req = new XMLHttpRequest();
 req.overrideMimeType("text/plain");
 
@@ -441,4 +442,3 @@ window.onkeydown = function(e) {
 
 window.onkeyup = function(e) { 
 	checkCorrectness();
-}

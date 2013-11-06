@@ -4,40 +4,28 @@
 	<meta charset="UTF-8">
 	
 	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript">
+  		WebFontConfig = {
+	    google: { families: [ 'Sintony:400,700:latin', 'Just+Me+Again+Down+Here::latin', 'Sirin+Stencil::latin' ] }
+	  };
+	  (function() {
+	    var wf = document.createElement('script');
+	    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+	      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+	    wf.type = 'text/javascript';
+	    wf.async = 'true';
+	    var s = document.getElementsByTagName('script')[0];
+	    s.parentNode.insertBefore(wf, s);
+	  })(); </script>
 	<script type="text/javascript" src="CrosswordJS.js"></script>
 	<style>
 	body{margin:0;}
-	canvas, .quiz {float:left;}
+	canvas, .quiz { float:left; }
 	.quiz li {}
 	.quiz li.active { background:lightgrey; }
-	.quiz li span {padding-left:1em;}
-	.quiz li.correct {color:gray;}
-	.quiz ul {list-style-type: none;}
-	</style>
-</head>
-<body onload="draw();">
-	<canvas id="stage" height="700px" width="700px"></canvas>
-	<ul id="AcrossQuestions" class="quiz">
-		
-	</ul>
-	<ul id="DownQuestions" class="quiz">
-		
-	</ul>
-<!DOCTYPE html>
-<head>
-	<title>Crossword Test</title>
-	<meta charset="UTF-8">
-	
-	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-	<script type="text/javascript" src="CrosswordJS.js"></script>
-	<style>
-	body{margin:0;}
-	canvas, .quiz {float:left;}
-	.quiz li {}
-	.quiz li.active { background:lightgrey; }
-	.quiz li span {padding-left:1em;}
-	.quiz li.correct {color:gray;}
-	.quiz ul {list-style-type: none;}
+	.quiz li span { padding-left:1em; }
+	.quiz li.correct { color:gray; }
+	.quiz ul { list-style-type: none; }
 	</style>
 </head>
 <body onload="draw();">

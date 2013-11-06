@@ -40,6 +40,8 @@ var prevX = focusX;
 var prevY = focusY;
 
 var time = [0, -1];
+var stopper = setInterval(redrawTimer, 1000);
+var isStopped = false;
 
 var black = "rgb(0, 0, 0)";			//Black
 var gray = 	"rgb(150, 150, 150)";	//Gray
@@ -49,6 +51,20 @@ var white = "rgb(255, 255, 255)";	//White
 
 //initializes crossword puzzle, called only once
 function init(puz) {
+	///////
+	WebFontConfig = {
+	    google: { families: [ 'Sintony:400,700:latin', 'Just+Me+Again+Down+Here::latin' ] }
+	  };
+	  (function() {
+	    var wf = document.createElement('script');
+	    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+	      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+	    wf.type = 'text/javascript';
+	    wf.async = 'true';
+	    var s = document.getElementsByTagName('script')[0];
+	    s.parentNode.insertBefore(wf, s);
+	  })();
+	///////
 	var data;
 	data = getCW(puz);
 	
@@ -98,7 +114,7 @@ function init(puz) {
 		};
 		
 		redrawTimer();
-		setInterval(redrawTimer, 1000);
+		
 	} 
 }
 
@@ -106,9 +122,9 @@ function init(puz) {
 function startDraw() {
 	//Header
 	ctxStage.fillStyle = "rgb(0, 0, 0)";
-	ctxStage.font = "30px Arial";
+	ctxStage.font = "30px Sirin Stencil";
 	ctxStage.fillText(title, 10, 30);
-	ctxStage.font = "15px Arial";
+	ctxStage.font = "15px Sirin Stencil";
 	ctxStage.fillText("Created by " + author + " on " + date, 10, 50);
 	ctxStage.fillText("Difficulty: " + difficulty, 10, 70);
 
@@ -186,6 +202,8 @@ function checkCell(x, y) {
 
 //redraws canvas based on code and possible secondary #s
 function redraw(code, secondary) {
+//	ctxStage.fillStyle = "rgb(244, 244, 0)";
+//	ctxStage.fillRect(0, 0, 700, 700);
 	prevX = focusX;
 	prevY = focusY;
 	if(code === 1) {	//Change of letter
@@ -286,7 +304,7 @@ function replicateCell(x, y) {
 	ctxStage.strokeRect((x*30) + 30, (y*30) + 90, 30, 30);
 
 	ctxStage.fillStyle = isCorrect?"green":USRgrid[y][x].lColor;
-	ctxStage.font = "20px Arial";
+	ctxStage.font = "25px Just Me Again Down Here";
 	ctxStage.fillText(USRgrid[y][x].letter, (x*30) + 38, (y*30) + 115);
 
 	ctxStage.fillStyle = black;
@@ -411,10 +429,12 @@ function redrawTimer() {
 		time[0]++;
 		time[1] = 0;
 	}
-	ctxStage.clearRect(390, 25, 90, 35);
-	ctxStage.font = "35px Arial";
+	ctxStage.clearRect(390, 25, 90, 40);
+	ctxStage.font = "700 35px Sintony";
 	ctxStage.fillStyle = "rgb(" + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + "," + Math.round(Math.random() * 255) + ")";
-	ctxStage.fillText(time[0] + ":" + (time[1] > 9 ? time[1] : "0" + time[1]), 390, 60);
+	ctxStage.fillText(time[0], (390 - ((time[0].toString().length - 1) * 22.5)), 60);
+	ctxStage.font = "400 35px Sintony";
+	ctxStage.fillText(":" + (time[1] > 9 ? time[1] : "0" + time[1]), 412.5, 60);	//Width separation: 22.5px assuming 35px font size
 }
 
 //Key events
@@ -447,6 +467,13 @@ window.onkeydown = function(e) {
 	} else if(key == 8) {	//Backspace
 		USRgrid[focusY][focusX].letter = " ";
 		redraw(4);
+	} else if(key == 192) {	// 	`  <-- That wee bastard
+		if(!isStopped) {
+			clearInterval(stopper);
+		} else {
+			stopper = setInterval(redrawTimer, 1000);
+		}
+		isStopped = !isStopped;
 	} else {
 		// Did not capture any keys
 		cancelDefault = false

@@ -163,7 +163,10 @@ function startDraw() {
 
 //Main drawing method; draws grid et al.
 function draw() {
-	var can = document.getElementById("stage");
+	var can = document.createElement("canvas");
+	can.width = minimumView ? 454:700;
+	can.height = minimumView ? 454:700;
+	document.getElementById("game").appendChild(can);
 	if(can.getContext) {
 		ctxStage = can.getContext("2d");
 

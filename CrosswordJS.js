@@ -33,6 +33,7 @@ var focusX = 0;
 var focusY = 0;
 var horiz = true;
 var activeNum = 1;
+var isEditing = false;
 
 var prevCells = [];
 var currCells = [];
@@ -118,6 +119,14 @@ function init(puz) {
 	} 
 }
 
+var minimumView = false,
+	showTimer = false,
+	xOffset = 30,
+	yOffset = 90;
+if(minimumView) {
+	xOffset = 0; yOffset = 0;
+}
+
 //Initializes drawing on canvas
 function startDraw() {
 	//Header
@@ -128,17 +137,18 @@ function startDraw() {
 	ctxStage.fillText("Created by " + author + " on " + date, 10, 50);
 	ctxStage.fillText("Difficulty: " + difficulty, 10, 70);
 
+
 	for(var y = 0; y < USRgrid.length; y++) {
 		for(var x = 0; x < USRgrid[y].length; x++) {
 			//Grid Boxes
 			ctxStage.fillStyle = USRgrid[y][x].cColor;
-			ctxStage.fillRect((x*30) + 30, (y*30) + 90, 30, 30);
+			ctxStage.fillRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
 			//Grid Lines
 			ctxStage.fillStyle = "rgb(0, 0, 0)";
-			ctxStage.strokeRect((x*30) + 30, (y*30) + 90, 30, 30);
+			ctxStage.strokeRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
 			//Grid Numbers
 			ctxStage.font = "10px Arial";
-			ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + 32, (y*30) + 100);
+			ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + xOffset + 2, (y*30) + yOffset + 10);
 		}
 	}
 
@@ -207,9 +217,9 @@ function redraw(code, secondary) {
 	prevX = focusX;
 	prevY = focusY;
 	if(code === 1) {	//Change of letter
-		if(horiz && focusX != 14 && USRgrid[focusY][focusX + 1].letter != "#") {	
+		if(horiz && focusX != 14 && USRgrid[focusY][focusX + 1].letter != "#" || isEditing) {	
 			focusX++;
-		} else if(!horiz && focusY != 14 && USRgrid[focusY + 1][focusX].letter != "#") {		
+		} else if(!horiz && focusY != 14 && USRgrid[focusY + 1][focusX].letter != "#" || isEditing) {		
 			focusY++;
 		}
 	} else if (code === 2) {	//Change of position via Up/Down
@@ -291,25 +301,25 @@ function redraw(code, secondary) {
 
 //Updates a cell based on USRgrid[y][x] element properties
 function replicateCell(x, y) {
-	ctxStage.clearRect((x*30) + 30, (y*30) + 90, 30, 30);
+	ctxStage.clearRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
 
 	// Check if cell is in a correct row/column
 	var isCorrect = false
 	if( CorrectAcrossQuestions[getCells(x,y,true).activeNum]  || CorrectDownQuestions[getCells(x,y,false).activeNum] )
 		isCorrect = true
 	ctxStage.fillStyle = USRgrid[y][x].cColor;
-	ctxStage.fillRect((x*30) + 30, (y*30) + 90, 30, 30);
+	ctxStage.fillRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
 
 	ctxStage.fillStyle = "rgb(0, 0, 0)";
-	ctxStage.strokeRect((x*30) + 30, (y*30) + 90, 30, 30);
+	ctxStage.strokeRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
 
 	ctxStage.fillStyle = isCorrect?"green":USRgrid[y][x].lColor;
 	ctxStage.font = "25px Just Me Again Down Here";
-	ctxStage.fillText(USRgrid[y][x].letter, (x*30) + 38, (y*30) + 115);
+	ctxStage.fillText(USRgrid[y][x].letter, (x*30) + xOffset + 8, (y*30) + yOffset + 25);
 
 	ctxStage.fillStyle = black;
 	ctxStage.font = "10px Arial";
-	ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + 32, (y*30) + 100);
+	ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + xOffset + 2, (y*30) + yOffset + 10);
 }
 
 function getCells(x,y,across) {
@@ -383,12 +393,17 @@ function calcRange(x, y) {
 	redraw(0);
 }
 
+function edit(event) {
+	event.target.disabled = !event.target.disabled;
+	isEditing = !isEditing;
+
+}
+
 function checkCorrectness() {
+
 	var across = getCells(focusX,focusY,true)
 	var down = getCells(focusX,focusY,false)
 	var check = [across,down]
-	
-	console.log(check)
 
 	for(var checki = 0; checki < check.length; checki++){
 		var cellsToCheck = check[checki]
@@ -407,7 +422,7 @@ function checkCorrectness() {
 	}
 	redraw(0)
 }
-
+/*
 function checkColors() {
 	console.log(USRgrid.length);
 	for(var x = 0; x < USRgrid.length; x++) {
@@ -421,9 +436,11 @@ function checkColors() {
 			}
 		}
 	}
-}
+}*/
 
 function redrawTimer() {
+	if(!showTimer)
+		return
 	time[1]++;
 	if(time[1] == 60) {
 		time[0]++;
@@ -443,19 +460,19 @@ window.onkeydown = function(e) {
 	var cancelDefault = true
 	console.log(key);
 	if(key == 38) {	//Up
-		if(focusY != 0 && USRgrid[focusY - 1][focusX].letter != "#") {
+		if(focusY != 0 && USRgrid[focusY - 1][focusX].letter != "#" || isEditing) {
 			redraw(2, -1);
 		}
 	} else if(key == 37) {	//Left
-		if(focusX != 0 && USRgrid[focusY][focusX - 1].letter != "#") {
+		if(focusX != 0 && USRgrid[focusY][focusX - 1].letter != "#" || isEditing) {
 			redraw(3, -1);
 		}
 	} else if(key == 40) {	//Down
-		if(focusY != 14 && USRgrid[focusY + 1][focusX].letter != "#") {
+		if(focusY != 14 && USRgrid[focusY + 1][focusX].letter != "#" || isEditing) {
 			redraw(2, 1);
 		}
 	} else if(key == 39) {	//Right
-		if(focusX != 14 && USRgrid[focusY][focusX + 1].letter != "#") {
+		if(focusX != 14 && USRgrid[focusY][focusX + 1].letter != "#" || isEditing) {
 			redraw(3, 1);
 		}
 	} else if(key == 32) {	//Space
@@ -467,6 +484,12 @@ window.onkeydown = function(e) {
 	} else if(key == 8) {	//Backspace
 		USRgrid[focusY][focusX].letter = " ";
 		redraw(4);
+	} else if(key == 46) {	//Delete
+		USRgrid[focusY][focusX].letter = " ";
+		redraw(0);
+	} else if(key == 190 && isEditing) {	//Period
+		USRgrid[focusY][focusX].letter = "#";
+		redraw(1);
 	} else if(key == 192) {	// 	`  <-- That wee bastard
 		if(!isStopped) {
 			clearInterval(stopper);
@@ -484,5 +507,6 @@ window.onkeydown = function(e) {
 }
 
 window.onkeyup = function(e) { 
+if(!isEditing)
 	checkCorrectness();
 }

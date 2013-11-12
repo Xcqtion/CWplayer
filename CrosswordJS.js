@@ -51,7 +51,7 @@ var wGray = "rgb(200, 200, 200)";	//White Gray
 var white = "rgb(255, 255, 255)";	//White
 
 //initializes crossword puzzle, called only once
-function init(puz) {
+function setupPuzzle(puz) {
 	///////
 	WebFontConfig = {
 	    google: { families: [ 'Sintony:400,700:latin', 'Just+Me+Again+Down+Here::latin' ] }
@@ -128,7 +128,7 @@ if(minimumView) {
 }
 
 //Initializes drawing on canvas
-function startDraw() {
+function setupGrid() {
 	//Header
 	ctxStage.fillStyle = "rgb(0, 0, 0)";
 	ctxStage.font = "30px Sirin Stencil";
@@ -162,7 +162,7 @@ function startDraw() {
 }
 
 //Main drawing method; draws grid et al.
-function draw() {
+function init() {
 	var can = document.createElement("canvas");
 	can.width = minimumView ? 454:700;
 	can.height = minimumView ? 454:700;
@@ -171,8 +171,8 @@ function draw() {
 		ctxStage = can.getContext("2d");
 
 		if(!loaded) {
-			init(1);
-			startDraw();
+			setupPuzzle(1);
+			setupGrid();
 		} 
 
 	} else {

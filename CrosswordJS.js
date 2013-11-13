@@ -50,6 +50,8 @@ var lGray =	"rgb(175, 175, 175)";	//Light Gray
 var wGray = "rgb(200, 200, 200)";	//White Gray
 var white = "rgb(255, 255, 255)";	//White
 
+var numberBoxes = [];
+
 
 //inputs cw_x.txt contents, creates 2d array consisting of
 //various attributes of the puzzle (title, author, etc) 
@@ -134,7 +136,11 @@ function setupPuzzle(puz) {
 					&& ANSgrid[y][z].letter != "#") {
 
 					USRgrid[y][z].number = currNum;
+
 					currNum++;
+
+					// Add numbered box to list for initiallizing correct answers
+					numberBoxes.push([y,z])
 				}
 			}	
 		}
@@ -206,11 +212,15 @@ function setupGrid() {
 	ctxStage.fillText("Across", 35, 592);
 	ctxStage.fillText("Down", 35, 637);
 
+	//Initiallize correctness colors
+	for (var i = numberBoxes.length - 1; i >= 0; i--) {
+		var cellCoords = numberBoxes[i];
+		checkCorrectness(cellCoords[0],cellCoords[1])
+	};
 	//Draw saved user letters
 	for(var y = 0; y < USRgrid.length; y++)
 		for(var z = 0; z < USRgrid[y].length; z++)
 			replicateCell(y,z)
-
 }
 
 //Main drawing method; draws grid et al.
@@ -287,7 +297,7 @@ function redraw(code, secondary) {
 			focusY--;
 		}
 	} 
-	
+
 	//Assumptuous, will fix for new cases
 	if (code <= 4) {
 		ctxStage.fillStyle = "rgb(175, 175, 175)";
@@ -356,19 +366,34 @@ function replicateCell(x, y) {
 	var isCorrect = false
 	if( CorrectAcrossQuestions[getCells(x,y,true).activeNum]  || CorrectDownQuestions[getCells(x,y,false).activeNum] )
 		isCorrect = true
-	ctxStage.fillStyle = USRgrid[y][x].cColor;
-	ctxStage.fillRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
 
-	ctxStage.fillStyle = "rgb(0, 0, 0)";
-	ctxStage.strokeRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
+	if(ANSgrid[y][x].letter != '#'){
 
-	ctxStage.fillStyle = isCorrect?"green":USRgrid[y][x].lColor;
-	ctxStage.font = "25px Just Me Again Down Here";
-	ctxStage.fillText(USRgrid[y][x].letter, (x*30) + xOffset + 8, (y*30) + yOffset + 25);
+		ctxStage.fillStyle = USRgrid[y][x].cColor;
+		ctxStage.fillRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
+	
+		ctxStage.fillStyle = "rgb(0, 0, 0)";
+		ctxStage.strokeRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
+		// Letter
+		ctxStage.fillStyle = isCorrect?"green":USRgrid[y][x].lColor;
+		ctxStage.font = "25px Just Me Again Down Here";
+		ctxStage.fillText(USRgrid[y][x].letter, (x*30) + xOffset + 8, (y*30) + yOffset + 25);
+	
+		// Small number
+		ctxStage.fillStyle = black;
+		ctxStage.font = "10px Arial";
+		ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + xOffset + 2, (y*30) + yOffset + 10);
+	} else {
+		// #
+		ctxStage.fillStyle = 'black';
+		ctxStage.fillRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
+	
+		ctxStage.fillStyle = "black";
+		ctxStage.strokeRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
 
-	ctxStage.fillStyle = black;
-	ctxStage.font = "10px Arial";
-	ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + xOffset + 2, (y*30) + yOffset + 10);
+		ctxStage.fillStyle = USRgrid[y][x].cColor;
+		ctxStage.fillRect((x*30) + xOffset, (y*30) + yOffset, 30, 30);
+	}
 }
 
 function drawCell(x,y){
@@ -451,11 +476,13 @@ function edit(event) {
 	isEditing = !isEditing;
 
 }
+function checkCorrectnessFocus() {
+	checkCorrectness(focusX,focusY);
+}
+function checkCorrectness(x, y) {
 
-function checkCorrectness() {
-
-	var across = getCells(focusX,focusY,true)
-	var down = getCells(focusX,focusY,false)
+	var across = getCells(x,y,true)
+	var down = getCells(x,y,false)
 	var check = [across,down]
 
 	for(var checki = 0; checki < check.length; checki++){
@@ -468,6 +495,7 @@ function checkCorrectness() {
 				break;
 			}
 		}
+		// Add correct number box to array of correctness
 		if(checki === 0)
 			CorrectAcrossQuestions[cellsToCheck.activeNum] = allCorrect
 		if(checki === 1)
@@ -475,21 +503,6 @@ function checkCorrectness() {
 	}
 	redraw(0)
 }
-/*
-function checkColors() {
-	console.log(USRgrid.length);
-	for(var x = 0; x < USRgrid.length; x++) {
-		for(var y = 0; y < USRgrid[x].length; y++) {
-			if(checkCell(x, y)) {
-				USRgrid[y][x].cColor = "rgb(0, 200, 100)";
-				USRgrid[y][x].lColor = "rgb(0, 100, 50)";
-			} else {
-				USRgrid[y][x].cColor = "rgb(200, 0, 100)";
-				USRgrid[y][x].lColor = "rgb(200, 0, 50)";
-			}
-		}
-	}
-}*/
 
 function redrawTimer() {
 	if(!showTimer)
@@ -560,7 +573,7 @@ window.onkeydown = function(e) {
 
 window.onkeyup = function(e) { 
 	if(!isEditing){
-		checkCorrectness();
+		checkCorrectnessFocus();
 		saveUserGrid();
 	}
 }

@@ -50,6 +50,26 @@ var lGray =	"rgb(175, 175, 175)";	//Light Gray
 var wGray = "rgb(200, 200, 200)";	//White Gray
 var white = "rgb(255, 255, 255)";	//White
 
+
+//inputs cw_x.txt contents, creates 2d array consisting of
+//various attributes of the puzzle (title, author, etc) 
+function parse(block) {
+	block = block.split(/\r\n/);
+	var sets = [];
+	var temp = [];
+
+	for(var x = 0; x < block.length; x++) {
+		if(block[x] == "$") {
+			sets.push(temp);
+			temp = [];
+		} else {
+			temp.push(block[x]);
+		}
+	}
+	sets.push(temp);
+	return sets;
+}
+
 //initializes crossword puzzle, called only once
 function setupPuzzle(puz) {
 	///////
@@ -77,22 +97,48 @@ function setupPuzzle(puz) {
 		date =		 data[2][0];
 		difficulty = data[3][0];
 
+		var AnsGridRows = data[4];
+		var UsrGridRows = document.cookie.split(',')
+
 		ACRclues = data[5];
 		DOWclues = data[6];
 
-		var currNum = 1;
-		for(var y = 0; y < data[4].length; y++) {
+		var currNum = 1,
+			userLetter;
+		for(var y = 0; y < AnsGridRows.length; y++) {
 			ANSgrid.push([]);
 			USRgrid.push([]);
-			for(var z = 0; z < data[4][y].length; z++) {
-				ANSgrid[y][z] = new Cell(data[4][y].charAt(z), null, "rgb(0, 0, 0)", (data[4][y].charAt(z) == "#" ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)"));
-				USRgrid[y][z] = new Cell((ANSgrid[y][z].letter == "#" ? "#" : " "), null, "rgb(0, 0, 0)", ANSgrid[y][z].cColor);
-				if(((y === 0 || z === 0) || (USRgrid[y - 1][z].letter == "#" || USRgrid[y][z - 1].letter == "#")) && USRgrid[y][z].letter != "#") {
+			for(var z = 0; z < AnsGridRows[y].length; z++) {
+				ANSgrid[y][z] = new Cell(
+					AnsGridRows[y].charAt(z),
+					null,
+					"rgb(0, 0, 0)",
+					AnsGridRows[y].charAt(z) == "#" ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)");
+
+				// Check if the user has an answer
+				userLetter = ' ';
+				try {
+					userLetter = UsrGridRows[y].charAt(z)
+				} catch(err){}
+
+				USRgrid[y][z] = new Cell(
+					ANSgrid[y][z].letter == "#" ? "#" : userLetter == '#'?' ':userLetter,
+					null,
+					"rgb(0, 0, 0)",
+					ANSgrid[y][z].cColor);
+
+				if((y === 0 
+					|| z === 0 
+					|| ANSgrid[y - 1][z].letter == "#" 
+					|| ANSgrid[y][z - 1].letter == "#") 
+					&& ANSgrid[y][z].letter != "#") {
+
 					USRgrid[y][z].number = currNum;
 					currNum++;
 				}
 			}	
 		}
+
 		calcRange(focusX, focusY);
 		//TODO: refine this, used just for cleanliness
 		USRgrid[0][0].cColor = "rgb(150, 150, 150)";
@@ -127,7 +173,7 @@ if(minimumView) {
 	xOffset = 0; yOffset = 0;
 }
 
-//Initializes drawing on canvas
+//Draws initial grid
 function setupGrid() {
 	//Header
 	ctxStage.fillStyle = "rgb(0, 0, 0)";
@@ -159,6 +205,12 @@ function setupGrid() {
 	ctxStage.font = "20px Arial";
 	ctxStage.fillText("Across", 35, 592);
 	ctxStage.fillText("Down", 35, 637);
+
+	//Draw saved user letters
+	for(var y = 0; y < USRgrid.length; y++)
+		for(var z = 0; z < USRgrid[y].length; z++)
+			replicateCell(y,z)
+
 }
 
 //Main drawing method; draws grid et al.
@@ -188,23 +240,16 @@ function getCW(puz) {
 	return req.responseText;
 }
 
-//inputs cw_x.txt contents, creates 2d array consisting of
-//various attributes of the puzzle (title, author, etc) 
-function parse(block) {
-	block = block.split(/\r\n/);
-	var sets = [];
-	var temp = [];
-
-	for(var x = 0; x < block.length; x++) {
-		if(block[x] == "$") {
-			sets.push(temp);
-			temp = [];
-		} else {
-			temp.push(block[x]);
-		}
-	}
-	sets.push(temp);
-	return sets;
+function saveUserGrid() {
+	var row = '', cookie = '';
+	for (var i = 0; i < USRgrid.length; i++) {
+		for (var j = 0; j < USRgrid[i].length; j++) {
+			row += USRgrid[i][j].letter + ( j==USRgrid[i].length - 1 ? ',' : '');
+		};
+		cookie+=row;
+		row = '';
+	};
+	document.cookie = cookie;
 }
 
 function checkCell(x, y) {
@@ -250,6 +295,7 @@ function redraw(code, secondary) {
 		ctxStage.fillRect(150, 615, 330, 30);
 		ctxStage.fillStyle = "rgb(35, 0, 255)";
 		ctxStage.font = "15px Arial";
+		// Clue boxes
 		ctxStage.fillText(getClue(focusX, focusY, true), 155, 588);
 		ctxStage.fillText(getClue(focusX, focusY, false), 155, 633);
 	}
@@ -323,6 +369,10 @@ function replicateCell(x, y) {
 	ctxStage.fillStyle = black;
 	ctxStage.font = "10px Arial";
 	ctxStage.fillText((USRgrid[y][x].number || " "), (x*30) + xOffset + 2, (y*30) + yOffset + 10);
+}
+
+function drawCell(x,y){
+	
 }
 
 function getCells(x,y,across) {
@@ -461,7 +511,6 @@ function redrawTimer() {
 window.onkeydown = function(e) {
 	var key = e.keyCode;
 	var cancelDefault = true
-	console.log(key);
 	if(key == 38) {	//Up
 		if(focusY != 0 && USRgrid[focusY - 1][focusX].letter != "#" || isEditing) {
 			redraw(2, -1);
@@ -510,6 +559,8 @@ window.onkeydown = function(e) {
 }
 
 window.onkeyup = function(e) { 
-if(!isEditing)
-	checkCorrectness();
+	if(!isEditing){
+		checkCorrectness();
+		saveUserGrid();
+	}
 }

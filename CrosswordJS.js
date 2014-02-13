@@ -1,3 +1,22 @@
+var Crossword, Puzzle;
+
+Puzzle = (function() {
+  function Puzzle(lines) {}
+
+  return Puzzle;
+
+})();
+
+Crossword = (function() {
+  function Crossword(user, puzzle) {
+    this.user = user;
+    this.puzzle = puzzle;
+  }
+
+  return Crossword;
+
+})();
+
 var req = new XMLHttpRequest();
 req.overrideMimeType("text/plain");
 
@@ -12,60 +31,58 @@ function Cell(letter, number, lColor, cColor) {
 	this.cColor = cColor;
 }
 
-var ctxStage;
+var ctxStage,
+  title  		= null,
+  author 		= null,
+  date   		= null,
+  difficulty  = null,
 
-var title  		= null;
-var author 		= null;
-var date   		= null;
-var difficulty  = null;
+  ACRclues	= [],
+  DOWclues	= [],
 
-var ACRclues	= [];
-var DOWclues	= [];
+  USRgrid	 	= [],
+  ANSgrid		= [],
 
-var USRgrid	 	= [];
-var ANSgrid		= [];
+  CorrectAcrossQuestions	= {},
+  CorrectDownQuestions	= {},
 
-var CorrectAcrossQuestions	= {};
-var CorrectDownQuestions	= {};
+  loaded = false,
+  focusX = 0,
+  focusY = 0,
+  horiz = true,
+  activeNum = 1,
+  isEditing = false,
 
-var loaded = false;
-var focusX = 0;
-var focusY = 0;
-var horiz = true;
-var activeNum = 1;
-var isEditing = false;
+  prevCells = [],
+  currCells = [],
+  prevX = focusX,
+  prevY = focusY,
 
-var prevCells = [];
-var currCells = [];
-var prevX = focusX;
-var prevY = focusY;
+  time = [0, -1],
+  stopper = setInterval(redrawTimer, 1000),
+  isStopped = false,
 
-var time = [0, -1];
-var stopper = setInterval(redrawTimer, 1000);
-var isStopped = false;
+  black = "rgb(0, 0, 0)",			//Black
+  gray = 	"rgb(150, 150, 150)",	//Gray
+  lGray =	"rgb(175, 175, 175)",	//Light Gray
+  wGray = "rgb(200, 200, 200)",	//White Gray
+  white = "rgb(255, 255, 255)",	//White
 
-var black = "rgb(0, 0, 0)";			//Black
-var gray = 	"rgb(150, 150, 150)";	//Gray
-var lGray =	"rgb(175, 175, 175)";	//Light Gray
-var wGray = "rgb(200, 200, 200)";	//White Gray
-var white = "rgb(255, 255, 255)";	//White
-
-var numberBoxes = [];
+  numberBoxes = [];
 
 
 //inputs cw_x.txt contents, creates 2d array consisting of
 //various attributes of the puzzle (title, author, etc) 
-function parse(block) {
-	block = block.split(/\r\n/);
-	var sets = [];
-	var temp = [];
+function parse(blocks) {
+	blocks = blocks.split(/\r\n/);
+	var sets = [], temp = [];
 
-	for(var x = 0; x < block.length; x++) {
-		if(block[x] == "$") {
+	for(var x = 0; x < blocks.length; x++) {
+		if(blocks[x] == "$") {
 			sets.push(temp);
 			temp = [];
 		} else {
-			temp.push(block[x]);
+			temp.push(blocks[x]);
 		}
 	}
 	sets.push(temp);
